@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شبیه‌ساز مدل حال و انتقال مرتعی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .states-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .state-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .state-box {
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+        
+        .state-excellent {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .state-good {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+        
+        .state-moderate {
+            background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+            color: white;
+        }
+        
+        .state-poor {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+        
+        .state-destroyed {
+            background: linear-gradient(135deg, #000000 0%, #434343 100%);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .state-box.active {
+            border-color: #2c3e50;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        .transition-arrow {
+            text-align: center;
+            font-size: 24px;
+            color: #95a5a6;
+            margin: 5px 0;
+        }
+        
+        .transition-phase {
+            font-size: 12px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .controls-panel {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .control-section {
+            margin-bottom: 20px;
+        }
+        
+        .control-section h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .control-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .control-item label {
+            font-size: 14px;
+            color: #34495e;
+        }
+        
+        .control-item select {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 2px solid #bdc3c7;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .score-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .score-value {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .positive {
+            color: #2ecc71;
+        }
+        
+        .negative {
+            color: #e74c3c;
+        }
+        
+        .info-panel {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .event-log {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 13px;
+        }
+        
+        .event-item {
+            margin-bottom: 8px;
+            padding: 5px;
+            border-left: 3px solid #3498db;
+            padding-right: 10px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c 0%, #f39c12 25%, #f1c40f 50%, #2ecc71 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        button#advance-year {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        button#advance-year:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 10000;">
+        <button onclick="window.location.href='ecology_menu.html'" 
+                style="background: white; border: 2px solid #667eea; padding: 12px 24px; 
+                       border-radius: 10px; font-size: 16px; font-family: Tahoma; 
+                       cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                       transition: all 0.3s ease;">
+            ← بازگشت به منوی اکولوژی
+        </button>
+    </div>
+    
+    <div class="container">
+        <h1>🌱 شبیه‌ساز مدل حال و انتقال اکوسیستم مرتعی 🌱</h1>
+        
+        <div class="game-area">
+            <div class="states-container">
+                <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">وضعیت اکوسیستم</h2>
+                
+                <div class="state-row">
+                    <div class="state-box state-excellent" id="state-excellent">
+                        عالی
+                        <div style="font-size: 12px; margin-top: 5px;">تنوع بالا، پوشش کامل</div>
+                    </div>
+                </div>
+                
+                <div class="transition-arrow">↕️ <span class="transition-phase">آستانه: 200 امتیاز</span></div>
+                
+                <div class="state-row">
+                    <div class="state-box state-good" id="state-good">
+                        خوب
+                        <div style="font-size: 12px; margin-top: 5px;">گونه‌های مطلوب غالب</div>
+                    </div>
+                </div>
+                
+                <div class="transition-arrow">↕️ <span class="transition-phase">آستانه: 100 امتیاز</span></div>
+                
+                <div class="state-row">
+                    <div class="state-box state-moderate" id="state-moderate">
+                        متوسط
+                        <div style="font-size: 12px; margin-top: 5px;">کاهش تنوع، فرسایش جزئی</div>
+                    </div>
+                </div>
+                
+                <div class="transition-arrow">↕️ <span class="transition-phase">آستانه: 50 امتیاز</span></div>
+                
+                <div class="state-row">
+                    <div class="state-box state-poor" id="state-poor">
+                        فقیر
+                        <div style="font-size: 12px; margin-top: 5px;">تخریب شدید، خاک لخت</div>
+                    </div>
+                </div>
+                
+                <div class="transition-arrow">↕️ <span class="transition-phase">آستانه: -100 امتیاز</span></div>
+                
+                <div class="state-row">
+                    <div class="state-box state-destroyed" id="state-destroyed">
+                        💀 تخریب سرزمین
+                        <div style="font-size: 12px; margin-top: 5px;">فروپاشی کامل اکوسیستم</div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 50%;">
+                        متوسط
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <div class="score-display">
+                    <div class="score-item">
+                        <span>💎 امتیاز تجمعی سیستم:</span>
+                        <span class="score-value" id="accumulated-score" style="font-size: 20px;">50</span>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 10px 0; padding-top: 10px;">
+                        <div class="score-item">
+                            <span>🌱 عوامل مثبت:</span>
+                            <span class="score-value positive" id="positive-score">+8</span>
+                        </div>
+                        <div class="score-item">
+                            <span>⚠️ عوامل منفی:</span>
+                            <span class="score-value negative" id="negative-score">-3</span>
+                        </div>
+                        <div class="score-item">
+                            <span>📊 خالص این سال:</span>
+                            <span class="score-value" id="total-score">+5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="advance-year">⏭️ پیشروی یک سال</button>
+                
+                <div class="control-section">
+                    <h3>📊 عوامل غیرقابل کنترل</h3>
+                    <div class="control-item">
+                        <label>🌦️ وضعیت اقلیمی:</label>
+                        <span id="climate-status">متعادل (0)</span>
+                    </div>
+                    <div class="control-item">
+                        <label>🔥 خطر آتش‌سوزی:</label>
+                        <span id="fire-status">ندارد (0)</span>
+                    </div>
+                    <div class="control-item">
+                        <label>🦠 بیماری‌ها:</label>
+                        <span id="disease-status">ندارد (0)</span>
+                    </div>
+                    <div class="control-item">
+                        <label>💰 بحران اقتصادی:</label>
+                        <span id="economic-status">ندارد (0)</span>
+                    </div>
+                    <div class="control-item">
+                        <label>🌿 نیروی ذاتی توالی:</label>
+                        <span style="color: #2ecc71; font-weight: bold;">+3</span>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h3>🎮 ابزارهای مدیریتی شما</h3>
+                    <div class="control-item">
+                        <label>🐄 شدت چرا:</label>
+                        <select id="grazing-intensity">
+                            <option value="3">حفاظت کامل (+3)</option>
+                            <option value="2">چرای سبک (+2)</option>
+                            <option value="0" selected>چرای متعادل (0)</option>
+                            <option value="-3">چرای متوسط (-3)</option>
+                            <option value="-6">چرای سنگین (-6)</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label>💧 مدیریت صحیح اراضی:</label>
+                        <select id="land-management">
+                            <option value="2">عالی (+2)</option>
+                            <option value="1">خوب (+1)</option>
+                            <option value="0" selected>متوسط (0)</option>
+                            <option value="-2">ضعیف (-2)</option>
+                            <option value="-5">بسیار ضعیف (-5)</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label>🌱 مدیریت زیستی اکوسیستم:</label>
+                        <select id="bio-management">
+                            <option value="6">احیای جامع (+6)</option>
+                            <option value="4">کاشت فعال (+4)</option>
+                            <option value="2">بذرپاشی (+2)</option>
+                            <option value="0" selected>بدون اقدام (0)</option>
+                            <option value="-3">مداخله مخرب (-3)</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label>🛡️ حفاظت خاک:</label>
+                        <select id="soil-protection">
+                            <option value="5">حفاظت کامل (+5)</option>
+                            <option value="3">سازه‌های متعدد (+3)</option>
+                            <option value="1">سازه‌های پراکنده (+1)</option>
+                            <option value="0" selected>بدون سازه (0)</option>
+                            <option value="-3">عدم کنترل (-3)</option>
+                            <option value="-7">تخریب فعال (-7)</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label>👥 مدیریت جوامع محلی:</label>
+                        <select id="community-management">
+                            <option value="5">مشارکت کامل (+5)</option>
+                            <option value="3">همکاری خوب (+3)</option>
+                            <option value="1">ارتباط ضعیف (+1)</option>
+                            <option value="0" selected>بدون ارتباط (0)</option>
+                            <option value="-3">تنش جزئی (-3)</option>
+                            <option value="-5">تعارض شدید (-5)</option>
+                            <option value="-8">درگیری (-8)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="info-panel">
+                    <strong>وضعیت فعلی:</strong>
+                    <div id="current-state-text" style="font-size: 20px; margin-top: 5px;">متوسط</div>
+                    <div id="transition-info" style="margin-top: 10px; font-size: 13px;">
+                        اطلاعات انتقال
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="event-log" id="event-log">
+            <div class="event-item">🎮 بازی آغاز شد</div>
+        </div>
+    </div>
+
+    <script>
+        // وضعیت بازی
+        const game = {
+            year: 0,
+            score: 0,
+            state: 1, // -1: تخریب, 0: فقیر, 1: متوسط, 2: خوب, 3: عالی
+            climate: 0,
+            fire: 0,
+            disease: 0,
+            economic: 0
+        };
+
+        const STATE_NAMES = ['💀 تخریب سرزمین', 'فقیر', 'متوسط', 'خوب', 'عالی'];
+        const MAX_SCORE = 300;
+
+        // شروع بازی
+        function initGame() {
+            const rand = Math.random();
+            if (rand < 0.10) {
+                game.state = 3;
+                game.score = 200;
+            } else if (rand < 0.40) {
+                game.state = 2;
+                game.score = 100;
+            } else if (rand < 0.70) {
+                game.state = 1;
+                game.score = 50;
+            } else {
+                game.state = 0;
+                game.score = 20;
+            }
+            
+            log('🎮 بازی با وضعیت ' + STATE_NAMES[game.state + 1] + ' آغاز شد (امتیاز: ' + game.score + ')');
+            updateDisplay();
+            calculateScores();
+        }
+
+        // محاسبه امتیازات فعلی (بدون تغییر)
+        function calculateScores() {
+            const grazing = parseInt(document.getElementById('grazing-intensity').value);
+            const land = parseInt(document.getElementById('land-management').value);
+            const bio = parseInt(document.getElementById('bio-management').value);
+            const soil = parseInt(document.getElementById('soil-protection').value);
+            const community = parseInt(document.getElementById('community-management').value);
+            
+            const positive = 3 + 
+                Math.max(0, game.climate) +
+                Math.max(0, grazing) + 
+                Math.max(0, land) + 
+                Math.max(0, bio) + 
+                Math.max(0, soil) +
+                Math.max(0, community);
+            
+            const negative = Math.min(0, game.climate) +
+                Math.min(0, grazing) + 
+                Math.min(0, land) + 
+                Math.min(0, bio) +
+                Math.min(0, soil) +
+                Math.min(0, community) +
+                game.fire + 
+                game.disease +
+                game.economic;
+            
+            const total = positive + negative;
+            
+            document.getElementById('positive-score').textContent = '+' + positive;
+            document.getElementById('negative-score').textContent = negative;
+            document.getElementById('total-score').textContent = (total >= 0 ? '+' : '') + total;
+            document.getElementById('accumulated-score').textContent = game.score;
+            
+            updateScoreColor();
+        }
+
+        // رنگ امتیاز
+        function updateScoreColor() {
+            const el = document.getElementById('accumulated-score');
+            if (game.score >= 200) el.style.color = '#2ecc71';
+            else if (game.score >= 100) el.style.color = '#a8e063';
+            else if (game.score >= 50) el.style.color = '#f2c94c';
+            else if (game.score >= -99) el.style.color = '#f45c43';
+            else el.style.color = '#e74c3c';
+            
+            if (game.score >= MAX_SCORE) {
+                el.textContent = game.score + ' (حداکثر)';
+            }
+        }
+
+        // پیشروی سال
+        function advanceYear() {
+            game.year++;
+            
+            // رویدادهای تصادفی
+            updateRandomEvents();
+            
+            // محاسبه امتیاز سال
+            const grazing = parseInt(document.getElementById('grazing-intensity').value);
+            const land = parseInt(document.getElementById('land-management').value);
+            const bio = parseInt(document.getElementById('bio-management').value);
+            const soil = parseInt(document.getElementById('soil-protection').value);
+            const community = parseInt(document.getElementById('community-management').value);
+            
+            const positive = 3 + 
+                Math.max(0, game.climate) +
+                Math.max(0, grazing) + 
+                Math.max(0, land) + 
+                Math.max(0, bio) + 
+                Math.max(0, soil) +
+                Math.max(0, community);
+            
+            const negative = Math.min(0, game.climate) +
+                Math.min(0, grazing) + 
+                Math.min(0, land) + 
+                Math.min(0, bio) +
+                Math.min(0, soil) +
+                Math.min(0, community) +
+                game.fire + 
+                game.disease +
+                game.economic;
+            
+            const yearScore = positive + negative;
+            const oldScore = game.score;
+            
+            // اضافه کردن به امتیاز تجمعی
+            game.score = Math.min(game.score + yearScore, MAX_SCORE);
+            
+            log('سال ' + game.year + ': امتیاز ' + (yearScore >= 0 ? '+' : '') + yearScore + ' | کل: ' + oldScore + ' → ' + game.score);
+            
+            // بروزرسانی
+            calculateScores();
+            checkStateChange();
+            updateDisplay();
+        }
+
+        // رویدادهای تصادفی
+        function updateRandomEvents() {
+            // اقلیم
+            const climateRand = Math.random();
+            if (climateRand < 0.15) {
+                game.climate = 5;
+                document.getElementById('climate-status').textContent = 'ترسالی (+5)';
+            } else if (climateRand < 0.40) {
+                game.climate = 2;
+                document.getElementById('climate-status').textContent = 'مرطوب (+2)';
+            } else if (climateRand < 0.75) {
+                game.climate = 0;
+                document.getElementById('climate-status').textContent = 'متعادل (0)';
+            } else if (climateRand < 0.95) {
+                game.climate = -3;
+                document.getElementById('climate-status').textContent = 'خشک (-3)';
+            } else {
+                game.climate = -5;
+                document.getElementById('climate-status').textContent = 'خشکسالی (-5)';
+            }
+            
+            // آتش
+            if (Math.random() < 0.08) {
+                game.fire = -7;
+                document.getElementById('fire-status').textContent = 'دارد (-7)';
+                log('🔥 آتش‌سوزی رخ داد!');
+            } else {
+                game.fire = 0;
+                document.getElementById('fire-status').textContent = 'ندارد (0)';
+            }
+            
+            // بیماری
+            if (Math.random() < 0.06) {
+                game.disease = -4;
+                document.getElementById('disease-status').textContent = 'دارد (-4)';
+                log('🦠 شیوع بیماری!');
+            } else {
+                game.disease = 0;
+                document.getElementById('disease-status').textContent = 'ندارد (0)';
+            }
+            
+            // بحران اقتصادی
+            const econRand = Math.random();
+            if (econRand < 0.50) {
+                game.economic = 0;
+                document.getElementById('economic-status').textContent = 'ندارد (0)';
+            } else if (econRand < 0.75) {
+                game.economic = -2;
+                document.getElementById('economic-status').textContent = 'خفیف (-2)';
+            } else if (econRand < 0.90) {
+                game.economic = -4;
+                document.getElementById('economic-status').textContent = 'متوسط (-4)';
+            } else {
+                game.economic = -6;
+                document.getElementById('economic-status').textContent = 'شدید (-6)';
+            }
+        }
+
+        // چک تغییر حالت
+        function checkStateChange() {
+            let newState;
+            
+            if (game.score <= -100) {
+                newState = -1;
+            } else if (game.score <= 49) {
+                newState = 0;
+            } else if (game.score <= 99) {
+                newState = 1;
+            } else if (game.score <= 199) {
+                newState = 2;
+            } else {
+                newState = 3;
+            }
+            
+            if (newState !== game.state) {
+                const oldName = STATE_NAMES[game.state + 1];
+                const newName = STATE_NAMES[newState + 1];
+                
+                if (newState > game.state) {
+                    log('✅✅✅ ارتقا از ' + oldName + ' به ' + newName + '!');
+                } else {
+                    log('⚠️⚠️⚠️ افول از ' + oldName + ' به ' + newName + '!');
+                }
+                
+                game.state = newState;
+            }
+        }
+
+        // بروزرسانی نمایش
+        function updateDisplay() {
+            // باکس‌های حالت
+            document.querySelectorAll('.state-box').forEach(b => b.classList.remove('active'));
+            const ids = ['state-destroyed', 'state-poor', 'state-moderate', 'state-good', 'state-excellent'];
+            document.getElementById(ids[game.state + 1]).classList.add('active');
+            
+            // متن حالت
+            document.getElementById('current-state-text').textContent = STATE_NAMES[game.state + 1];
+            
+            // اطلاعات انتقال
+            let info = 'امتیاز فعلی: ' + game.score;
+            if (game.state < 3) {
+                const thresholds = [50, 100, 200];
+                const needed = thresholds[game.state] - game.score;
+                info += ' | برای ارتقا: +' + needed;
+            }
+            document.getElementById('transition-info').textContent = info;
+            
+            // نوار پیشرفت
+            const percent = Math.max(0, Math.min(100, ((game.score + 100) / 400) * 100));
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-fill').textContent = STATE_NAMES[game.state + 1];
+        }
+
+        // لاگ
+        function log(msg) {
+            const logEl = document.getElementById('event-log');
+            const item = document.createElement('div');
+            item.className = 'event-item';
+            item.textContent = msg;
+            logEl.insertBefore(item, logEl.firstChild);
+            
+            while (logEl.children.length > 10) {
+                logEl.removeChild(logEl.lastChild);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('advance-year').addEventListener('click', advanceYear);
+        document.getElementById('grazing-intensity').addEventListener('change', calculateScores);
+        document.getElementById('land-management').addEventListener('change', calculateScores);
+        document.getElementById('bio-management').addEventListener('change', calculateScores);
+        document.getElementById('soil-protection').addEventListener('change', calculateScores);
+        document.getElementById('community-management').addEventListener('change', calculateScores);
+
+        // شروع
+        initGame();
+    </script>
+</body>
+</html>

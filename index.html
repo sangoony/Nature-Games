@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بازی مدیریت و اصلاح مراتع - نسخه پیشرفته</title>
+        <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="game-header">
+            <h1>بازی مدیریت و اصلاح مراتع - نسخه پیشرفته</h1>
+            <p>مدیریت پایدار مراتع در مناطق خشک و نیمه خشک</p>
+        </div>
+        
+        <div class="config-panel" id="config-panel">
+            <div class="game-guide" style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd;">
+                <h3 style="color: #5a723f; margin-top: 0;">درباره بازی</h3>
+                <p style="text-align: right; line-height: 1.6;">
+                    سلام! به بازی مدیریت مرتع خوش آمدید. در این بازی سعی کردم شرایط نزدیک به واقعیت برای مدیریت یک مرتع رو براتون شبیه سازی کنم. اگر پیشنهادی در زمینه بهبود این محیط دارین لطفا با من تماس بگیرید.
+                    با احترام. دکتر حامد سنگونی. استادیار دانشکده منابع طبیعی و محیط زیست دانشگاه فردوسی مشهد.<br>ایمیل: <a href="mailto:Sangoony@um.ac.ir" style="color: #5a723f; font-weight: bold;">Sangoony@um.ac.ir</a><br>
+                    ایمیل: <a href="mailto:Sangoony@um.ac.ir" style="color: #5a723f; font-weight: bold;">Sangoony@um.ac.ir</a>
+                    Sangoony@um.ac.ir
+                </p>
+            </div>
+            
+            <h3>انتخاب سطح دشواری</h3>
+            <div class="difficulty-levels">
+                <div class="difficulty-btn easy-btn active" id="easy-btn" data-level="easy">آسان (مبتدی)</div>
+                <div class="difficulty-btn medium-btn" id="medium-btn" data-level="medium">متوسط (کارشناس)</div>
+                <div class="difficulty-btn hard-btn" id="hard-btn" data-level="hard">سخت (پیشرفته)</div>
+            </div>
+            
+            <h3>اطلاعات دانشجو</h3>
+            <div style="margin-bottom: 15px;">
+                <label for="student-name" style="display: block; margin-bottom: 5px;">نام و نام خانوادگی:</label>
+                <input type="text" id="student-name" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: Tahoma;" placeholder="مثال: علی احمدی" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label for="student-id" style="display: block; margin-bottom: 5px;">شماره دانشجویی:</label>
+                <input type="text" id="student-id" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: Tahoma;" placeholder="مثال: 12345678" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label for="access-code" style="display: block; margin-bottom: 5px;">کد دسترسی (OTP):</label>
+                <input type="text" id="access-code" maxlength="8" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: Courier, monospace; font-size: 18px; letter-spacing: 2px; text-align: center;" placeholder="××××××××" required>
+                <small style="color: #666; font-size: 12px;">کد 8 رقمی که از استاد دریافت کرده‌اید را وارد کنید</small>
+            </div>
+            
+            <h3>تنظیمات بازی</h3>
+            <div>
+                <label for="tile-count">تعداد قطعات زمین (6 تا 14):</label>
+                <input type="range" id="tile-count" min="6" max="14" value="9" step="1">
+                <span id="tile-count-value">9</span>
+            </div>
+            
+            <button id="start-game-btn" style="margin-top: 20px; padding: 10px 20px; font-size: 16px;">شروع بازی</button>
+        </div>
+        
+        <div class="info-panel">
+            <h3>راهنمای بازی</h3>
+            <p>شما مدیر یک منطقه مرتعی در اقلیم خشک و نیمه خشک هستید. وظیفه شما مدیریت منابع، احیای مراتع تخریب شده و افزایش پایداری اکوسیستم است.</p>
+            <ul>
+                <li>با کلیک بر روی هر قطعه زمین، آن را انتخاب و اقدامات مدیریتی را اعمال کنید.</li>
+                <li>هر قطعه زمین دارای ظرفیت مجاز و تعداد دام موجود است.</li>
+                <li>برای هر فصل تنها 30 ثانیه زمان دارید تا تصمیمات مدیریتی خود را اجرا کنید.</li>
+                <li>از گزینه‌های بهره‌برداری موازی برای ایجاد درآمد جایگزین و کاهش فشار دام استفاده کنید.</li>
+                <li>مراقب رویدادهای طبیعی و اقتصادی باشید که می‌توانند بر وضعیت مرتع تأثیر بگذارند.</li>
+            </ul>
+            <p>راهنمای رنگ‌های قطعات:</p>
+            <ul>
+                <li><span style="color: #d32f2f;">قرمز (بحرانی)</span>: وضعیت بسیار نامناسب با پوشش گیاهی کمتر از 20%</li>
+                <li><span style="color: #a17c5b;">قهوه‌ای (تخریب شده)</span>: وضعیت نامناسب با پوشش گیاهی بین 20% تا 40%</li>
+                <li><span style="color: #b5d8a6;">سبز روشن (در حال بهبود)</span>: وضعیت متوسط با پوشش گیاهی بین 40% تا 70%</li>
+                <li><span style="color: #6b8e4e;">سبز تیره (سالم)</span>: وضعیت مناسب با پوشش گیاهی بیشتر از 70%</li>
+            </ul>
+            <p>راهنمای بافت خاک:</p>
+            <ul>
+                <li>سنگین: مناسب برای کپه‌کاری و نهالکاری</li>
+                <li>متوسط: مناسب برای اکثر اقدامات</li>
+                <li>سبک: مناسب برای بذرپاشی و کنتورفارو</li>
+            </ul>
+            <p>راهنمای توپوگرافی:</p>
+            <ul>
+                <li>کوهستانی: کنتورفارو مؤثر نیست</li>
+                <li>کوهپایه‌ای و تپه‌ماهوری: مناسب برای اکثر اقدامات</li>
+                <li>دشتی: مناسب برای آبیاری تکمیلی (فقط در تابستان)</li>
+            </ul>
+        </div>
+        
+        <div class="game-content" id="game-content" style="display: none;">
+            <div class="resources">
+                <div class="resource">
+                    <h3>بودجه</h3>
+                    <div id="budget">3000</div>
+                </div>
+                <div class="resource">
+                    <h3>فصل</h3>
+                    <div id="season">بهار</div>
+                </div>
+                <div class="resource">
+                    <h3>سال</h3>
+                    <div id="year">1</div>
+                </div>
+                <div class="resource">
+                    <h3>امتیاز</h3>
+                    <div id="score">0</div>
+                </div>
+                <div class="resource">
+                    <h3>درآمد جایگزین</h3>
+                    <div id="alt-income">0</div>
+                </div>
+                <div class="resource">
+                    <h3>سطح تحقیق</h3>
+                    <div id="research-level">0</div>
+                </div>
+                <div class="resource">
+                    <h3>رضایت دامداران</h3>
+                    <div id="farmer-satisfaction-value">50%</div>
+                    <div class="farmer-satisfaction">
+                        <div class="farmer-satisfaction-bar" id="farmer-satisfaction-bar" style="width: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timer-container">
+                زمان باقیمانده: <span id="timer">30</span> ثانیه
+            </div>
+            
+            <div class="selected-tile-info" id="selected-tile-info" style="display: none;">
+                <h3>اطلاعات قطعه انتخاب شده</h3>
+                <div id="tile-details"></div>
+            </div>
+            
+            <div class="action-buttons" id="action-buttons">
+                <button id="contour-btn">کنترل فرسایش (کنتورفارو) (هزینه: 200)</button>
+                <button id="seeding-btn">بذرپاشی (هزینه: 50)</button>
+                <button id="hill-btn">کپه کاری (هزینه: 300)</button>
+                <button id="sapling-btn">نهالکاری (هزینه: 400)</button>
+                <button id="water-btn">آبیاری تکمیلی (هزینه: 150)</button>
+                <button id="fence-btn">تامین علوفه جایگزین و محدود کردن چرا (هزینه: 300)</button>
+                <button id="grazing-system-btn">استفاده از سیستم چرای دام متناسب با منطقه (هزینه: 200)</button>
+                <button id="research-btn">تحقیق در مورد گونه‌های جدید (هزینه: 200)</button>
+            </div>
+            
+            <div class="game-section">
+                <h2>مرتع شما</h2>
+                <div class="color-guide">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: #d32f2f;"></div>
+                        <span>بحرانی</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: #a17c5b;"></div>
+                        <span>تخریب شده</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: #b5d8a6;"></div>
+                        <span>در حال بهبود</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: #6b8e4e;"></div>
+                        <span>سالم</span>
+                    </div>
+                </div>
+                <div class="map-container">
+                    <div class="map" id="range-map"></div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="next-season-btn">فصل بعد</button>
+                <button id="save-game-btn">ذخیره بازی</button>
+                <button id="load-game-btn">بارگذاری بازی</button>
+                <button id="generate-pdf-btn">تولید گزارش PDF</button>
+                <button id="decision-report-btn" style="background-color: #2196F3;">📊 گزارش دقیق تصمیمات</button>
+                <button id="compare-students-btn" style="background-color: #ff9800;">🏆 مقایسه دانشجویان</button>
+            </div>
+            
+            <div class="alternative-income">
+                <h3>بهره‌برداری موازی</h3>
+                <p>با سرمایه‌گذاری در این موارد، می‌توانید منابع درآمدی جایگزین ایجاد کرده و فشار چرا را کاهش دهید:</p>
+                <div class="income-options">
+                    <button id="herbs-btn">پرورش گیاهان دارویی (هزینه: 700، درآمد: 50 در هر فصل)</button>
+                    <button id="tourism-btn">توسعه گردشگری طبیعت (هزینه: 900، درآمد: 80 در هر فصل)</button>
+                    <button id="beekeeping-btn">زنبورداری (هزینه: 500، درآمد: 60 در هر فصل)</button>
+                    <button id="livestock-btn">دامداری (هزینه: 50، درآمد: 10 در هر فصل)</button>
+                    <button id="other-invest-btn">سایر سرمایه‌گذاری‌ها (هزینه: 700، درآمد: 50 در هر فصل)</button>
+                </div>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-box">
+                    <h3>وضعیت پوشش گیاهی</h3>
+                    <div id="vegetation-status">45%</div>
+                </div>
+                <div class="stat-box">
+                    <h3>میزان فرسایش خاک</h3>
+                    <div id="erosion-status">35%</div>
+                </div>
+            </div>
+            
+            <div class="game-section">
+                <h3>رویدادها</h3>
+                <div class="event-log" id="event-log">
+                    <p>به بازی مدیریت و اصلاح مراتع خوش آمدید! هدف شما احیای مراتع و ایجاد یک اکوسیستم پایدار است.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- پاپ‌آپ رویدادها -->
+    <div id="event-popup" style="display: none;" class="event-popup">
+        <h2 id="event-title">عنوان رویداد</h2>
+        <p id="event-description">توضیحات رویداد</p>
+        <button id="event-close">متوجه شدم</button>
+    </div>
+    
+    <!-- پاپ‌آپ هشدارها -->
+    <div id="warning-popup" style="display: none;" class="warning-popup">
+        <h2 id="warning-title">هشدار</h2>
+        <p id="warning-message">پیام هشدار</p>
+        <button id="warning-close">متوجه شدم</button>
+    </div>
+    
+    <!-- پاپ‌آپ پایان بازی -->
+    <div id="end-game-popup" style="display: none;" class="event-popup">
+        <h2 id="end-game-title">پایان بازی!</h2>
+        <div id="end-game-description"></div>
+        <div class="results-container" id="results-container">
+            <div class="results-tabs">
+                <div class="results-tab active" data-tab="summary">خلاصه</div>
+                <div class="results-tab" data-tab="comparison">مقایسه وضعیت</div>
+                <div class="results-tab" data-tab="chart">نمودارها</div>
+                <div class="results-tab" data-tab="highscores">بالاترین امتیازها</div>
+            </div>
+            
+            <div class="results-content active" id="summary-content">
+                <div id="final-stats"></div>
+            </div>
+            
+            <div class="results-content" id="comparison-content">
+                <h3>مقایسه وضعیت مرتع در ابتدا و انتهای بازی</h3>
+                <div class="comparison-container" id="tile-comparison"></div>
+            </div>
+            
+            <div class="results-content" id="chart-content">
+                <h3>تغییرات وضعیت مرتع در طول بازی</h3>
+                <div class="chart-container">
+                    <canvas id="stats-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="results-content" id="highscores-content">
+                <h3>بالاترین امتیازهای کسب شده</h3>
+                <div id="highscores-list"></div>
+            </div>
+            
+            <div class="educational-links" id="educational-links">
+                <h3>منابع آموزشی بیشتر</h3>
+                <ul>
+                    <li><a href="https://example.com/rangeland1" target="_blank">مثال واقعی از مدیریت مراتع در ایران</a></li>
+                    <li><a href="https://example.com/rangeland2" target="_blank">راهکارهای احیای مراتع تخریب شده</a></li>
+                    <li><a href="https://example.com/rangeland3" target="_blank">تأثیر تغییرات اقلیمی بر مراتع</a></li>
+                </ul>
+            </div>
+        </div>
+        <button id="end-game-close">بستن</button>
+    </div>
+    
+    <div id="overlay" style="display: none;" class="overlay">></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

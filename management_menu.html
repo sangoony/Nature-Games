@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت و احیای مرتع - دکتر حامد سنگونی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #5a723f 0%, #3d4f29 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .back-button {
+            background: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Tahoma';
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            color: #5a723f;
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        
+        header p {
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+        
+        .game-card.active {
+            border: 3px solid #5a723f;
+        }
+        
+        .game-card.coming-soon {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .game-card.coming-soon:hover {
+            transform: none;
+        }
+        
+        .game-icon {
+            font-size: 50px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .game-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #5a723f;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .game-description {
+            color: #666;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .game-status {
+            text-align: center;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .status-soon {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-button" onclick="window.location.href='hub.html'">
+            ← بازگشت به صفحه اصلی
+        </button>
+        
+        <header>
+            <h1>🎮 مدیریت و احیای مرتع</h1>
+            <p>بازی‌های آموزشی تعاملی برای یادگیری مدیریت، اصلاح و احیای مراتع</p>
+        </header>
+        
+        <div class="games-grid">
+            <!-- بازی 1: مدیریت جامع (فعال) -->
+            <a href="index.html" class="game-card active">
+                <div class="game-icon">🎯</div>
+                <div class="game-title">مدیریت جامع مرتع</div>
+                <div class="game-description">
+                    بازی کامل مدیریت مرتع با تصمیم‌گیری استراتژیک، اقدامات اصلاحی، 
+                    مدیریت بودجه، درآمدهای جایگزین و سیستم نمره‌دهی پیشرفته
+                </div>
+                <div class="game-status status-active">✅ فعال - نیاز به OTP</div>
+            </a>
+            
+            <!-- بازی 2: برنامه‌ریزی چرا (بزودی) -->
+            <div class="game-card coming-soon">
+                <div class="game-icon">🐑</div>
+                <div class="game-title">برنامه‌ریزی چرای دام</div>
+                <div class="game-description">
+                    آموزش سیستم‌های مختلف چرا، تعیین ظرفیت، چرخشی، تأخیری، 
+                    استراحتی و تأثیر هر کدام بر مرتع
+                </div>
+                <div class="game-status status-soon">🔜 به زودی</div>
+            </div>
+            
+            <!-- بازی 3: روش‌های اصلاح (بزودی) -->
+            <div class="game-card coming-soon">
+                <div class="game-icon">🌱</div>
+                <div class="game-title">روش‌های اصلاح مرتع</div>
+                <div class="game-description">
+                    آموزش عملی تکنیک‌های مختلف اصلاح: بذرپاشی، کپه‌کاری، 
+                    نهالکاری، کنتورفارو و انتخاب روش مناسب
+                </div>
+                <div class="game-status status-soon">🔜 به زودی</div>
+            </div>
+            
+            <!-- بازی 4: مدیریت آب (بزودی) -->
+            <div class="game-card coming-soon">
+                <div class="game-icon">💧</div>
+                <div class="game-title">مدیریت منابع آب</div>
+                <div class="game-description">
+                    برنامه‌ریزی آبیاری، ذخیره آب، احداث آبشخور، آبخیزداری 
+                    و مدیریت بهینه منابع آبی در مرتع
+                </div>
+                <div class="game-status status-soon">🔜 به زودی</div>
+            </div>
+            
+            <!-- بازی 5: کنترل فرسایش (بزودی) -->
+            <div class="game-card coming-soon">
+                <div class="game-icon">⛰️</div>
+                <div class="game-title">کنترل فرسایش خاک</div>
+                <div class="game-description">
+                    شناخت انواع فرسایش، روش‌های پیشگیری، عملیات مکانیکی 
+                    و بیولوژیک برای حفاظت خاک
+                </div>
+                <div class="game-status status-soon">🔜 به زودی</div>
+            </div>
+            
+            <!-- بازی 6: مدیریت اقتصادی (بزودی) -->
+            <div class="game-card coming-soon">
+                <div class="game-icon">💰</div>
+                <div class="game-title">مدیریت اقتصادی</div>
+                <div class="game-description">
+                    تحلیل هزینه-فایده، درآمدهای جایگزین، بازاریابی محصولات 
+                    و برنامه‌ریزی مالی پایدار
+                </div>
+                <div class="game-status status-soon">🔜 به زودی</div>
+            </div>
+        </div>
+    </div>
+        
+        <div style="background: white; border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); margin-top: 40px;">
+            <p style="color: #666;">© 2026 دانشگاه فردوسی مشهد - دانشکده منابع طبیعی و محیط زیست</p>
+            <p style="margin-top: 10px; color: #666;">دکتر حامد سنگونی - ایمیل: <a href="mailto:Sangoony@um.ac.ir" style="color: #5a723f; text-decoration: none; font-weight: bold;">Sangoony@um.ac.ir</a></p>
+        </div>
+    </div>
+</body>
